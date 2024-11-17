@@ -18,7 +18,7 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, request, render_template, g, redirect, Response, session, abort, flash
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -36,12 +36,13 @@ app = Flask(__name__, template_folder=tmpl_dir)
 # For your convenience, we already set it to the class database
 
 # Use the DB credentials you received by e-mail
-DB_USER = "YOUR_DB_USERNAME_HERE"
-DB_PASSWORD = "YOUR_DB_PASSWORD_HERE"
+DB_USER = "yx2950"
+DB_PASSWORD = "hi02402281017"
 
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 
-DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
+DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
+
 
 
 #
@@ -51,14 +52,24 @@ engine = create_engine(DATABASEURI)
 
 
 # Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
-
-
+# engine.execute("""DROP TABLE IF EXISTS test;""")
+# engine.execute("""CREATE TABLE IF NOT EXISTS test (
+#   id serial,
+#   name text
+# );""")
+# engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+with engine.connect() as connection:
+  connection.execute(text("DROP TABLE IF EXISTS test;"))
+  connection.execute(text("""
+        CREATE TABLE IF NOT EXISTS test (
+            id serial,
+            name text
+        );
+    """))
+  connection.commit()
+  connection.execute(text("""
+        INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');
+    """))
 
 @app.before_request
 def before_request():
@@ -78,14 +89,13 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(exception):
-  """
-  At the end of the web request, this makes sure to close the database connection.
-  If you don't the database could run out of memory!
-  """
-  try:
-    g.conn.close()
-  except Exception as e:
-    pass
+    """
+    At the end of the web request, this makes sure to close the database connection.
+    """
+    try:
+        g.conn.close()
+    except Exception as e:
+        print(f"Error during teardown: {e}")
 
 
 #
@@ -120,9 +130,9 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM test")
+  cursor = g.conn.execute(text("SELECT name FROM test"))
   names = []
-  for result in cursor:
+  for result in cursor.mappings():
     names.append(result['name'])  # can also be accessed using result[0]
   cursor.close()
 
@@ -159,7 +169,10 @@ def index():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  if not session.get('logged_in'):
+    return render_template('login.html')
+  else:
+    return render_template("index.html", **context)
 
 #
 # This is an example of a different path.  You can see it at
@@ -174,20 +187,34 @@ def another():
   return render_template("anotherfile.html")
 
 
+
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
   print(name)
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-  g.conn.execute(text(cmd), name1 = name, name2 = name);
+  # Define the SQL command
+  cmd = text('INSERT INTO test(name) VALUES (:name1), (:name2)')
+  # Execute with a parameter dictionary
+  g.conn.execute(cmd, {"name1": name, "name2": name})
+  g.conn.commit()
   return redirect('/')
 
 
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
+@app.route('/login', methods=['POST'])
+def do_admin_login():
+  POST_USERNAME = str(request.form['username'])
+  POST_PASSWORD = str(request.form['password'])
+  if request.form['password'] == '1' and request.form['username'] == 'admin':
+    session['logged_in'] = True
+  else:
+    flash('wrong password!')
+  return index()
+
+@app.route("/logout")
+def logout():
+  session['logged_in'] = False
+  return index()
 
 
 if __name__ == "__main__":
@@ -198,22 +225,59 @@ if __name__ == "__main__":
   @click.option('--threaded', is_flag=True)
   @click.argument('HOST', default='0.0.0.0')
   @click.argument('PORT', default=8111, type=int)
+  # def run(debug, threaded, host, port):
+  #   """
+  #   This function handles command line parameters.
+  #   Run the server using
+
+  #       python server.py
+
+  #   Show the help text using
+
+  #       python server.py --help
+
+  #   """
+
+  #   HOST, PORT = host, port
+  #   print("running on %s:%d" % (HOST, PORT))
+  #   app.secret_key = os.urandom(12)
+  #   app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+  
   def run(debug, threaded, host, port):
     """
-    This function handles command line parameters.
-    Run the server using
-
-        python server.py
-
-    Show the help text using
-
-        python server.py --help
-
+    Run the Flask server and print all data from all tables in the database.
     """
+    from sqlalchemy.exc import SQLAlchemyError
+    
+    # Connect to the database and print all table data
+    with engine.connect() as connection:
+        try:
+            # Query for all table names owned by the current user
+            result = connection.execute(
+                text("SELECT tablename FROM pg_catalog.pg_tables WHERE tableowner = 'yx2950'")
+            ).mappings()
+            
+            print("\n=== Database Tables and Data ===")
+            for row in result:
+                table_name = row["tablename"]
+                print(f"\nTable: {table_name}")
+                
+                # Fetch all data from the table
+                data_result = connection.execute(text(f"SELECT * FROM {table_name}")).mappings()
+                data = [dict(data_row) for data_row in data_result]
+                
+                if data:
+                    for record in data:
+                        print(record)
+                else:
+                    print("No data in this table.")
+        except SQLAlchemyError as e:
+            print(f"Error accessing database: {str(e)}")
 
-    HOST, PORT = host, port
-    print("running on %s:%d" % (HOST, PORT))
-    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+    # Start the Flask server
+    print(f"\nRunning on {host}:{port}")
+    app.secret_key = os.urandom(12)
+    app.run(host=host, port=port, debug=debug, threaded=threaded)
 
 
   run()
