@@ -1,29 +1,134 @@
-<html>
-  <style>
-    body{ 
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style>
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+    <!-- JQuery -->
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename = 'index.js') }}"></script>
+</head>
+
+{% include 'navbar.html' %}
 
 <body>
-  <h1>Some famous Computer Scientists</h1>
-  <div>{{data}}</div>
+    <div class="container">
+        <!-- Filters Section -->
+        <div class="filters">
+            <h2>Filters</h2>
+            <!-- Date Range Filter -->
+            <div class="date-range-filter">
+              <div>
+                  <label for="date">Date:</label>
+                  <input type="date" id="date" name="date">
+              </div>
+            </div>
+            <div class="location-filter">
+              <label for="state-select">Select a State</label>
+              <select id="state-select" name="state">
+                  <option value="" disabled selected>Choose a state</option>
+              </select>
+              <label for="city-select">Select a City</label>
+              <select id="city-select" name="city">
+                  <option value="" disabled selected>Choose a city</option>
+              </select>
 
-  <div>
-    {% for n in data %}
-    <div>{{n}}</div>
-    {% endfor %}
-  </div>
+              <label for="street-info">Street Info</label>
+              <input type="text" id="street-info" name="street-info" placeholder="Enter street or address" disabled>
+            </div>
+            
+            <!-- Expandable Filters -->
+            <button id="expand-filters">Expand Filters</button>
+            <div id="extra-filters" style="display: none;">
+                <h3>Additional Filters</h3>
 
-<p><a href="/another">Go to the other page</a></p>
+                <!-- Dietary Restrictions -->
+                <div class="dietary-restrictions">
+                    <label>Dietary Restrictions:</label><br>
+                    <input type="checkbox" id="vegan" name="dietary-restrictions" value="Vegan">
+                    <label for="vegan">Vegan</label><br>
+                    <input type="checkbox" id="vegetarian" name="dietary-restrictions" value="Vegetarian">
+                    <label for="vegetarian">Vegetarian</label><br>
+                    <input type="checkbox" id="kosher" name="dietary-restrictions" value="Kosher">
+                    <label for="kosher">Kosher</label><br>
+                    <input type="checkbox" id="halal" name="dietary-restrictions" value="Halal">
+                    <label for="halal">Halal</label><br>
+                    <input type="checkbox" id="gluten-free" name="dietary-restrictions" value="Gluten-Free">
+                    <label for="gluten-free">Gluten-Free</label>
+                </div>
 
-<form method="POST" action="/add">
-<p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
-</form>
+                <!-- Meal Types -->
+                <div class="meal-types">
+                    <label>Meal Types:</label><br>
+                    <input type="checkbox" id="italian" name="meal-types" value="Italian">
+                    <label for="italian">Italian</label><br>
+                    <input type="checkbox" id="mexican" name="meal-types" value="Mexican">
+                    <label for="mexican">Mexican</label><br>
+                    <input type="checkbox" id="seafood" name="meal-types" value="Seafood">
+                    <label for="seafood">Seafood</label><br>
+                    <input type="checkbox" id="fusion" name="meal-types" value="Fusion">
+                    <label for="fusion">Fusion</label><br>
+                    <input type="checkbox" id="paleo" name="meal-types" value="Paleo">
+                    <label for="paleo">Paleo</label>
+                </div>
 
+                <!-- In Return Options -->
+                <div class="in-return">
+                    <label>In Return:</label><br>
+                    <input type="checkbox" id="cash" name="in-return" value="Cash">
+                    <label for="cash">Cash</label><br>
+                    <input type="checkbox" id="dishes" name="in-return" value="Doing dishes">
+                    <label for="dishes">Doing Dishes</label><br>
+                    <input type="checkbox" id="ingredients" name="in-return" value="Bringing ingredients">
+                    <label for="ingredients">Bringing Ingredients</label><br>
+                    <input type="checkbox" id="sauces" name="in-return" value="Bringing sauces">
+                    <label for="sauces">Bringing Sauces</label>
+                </div>
+            </div>
+            <button id="submit-filters">Submit</button>
+            <button id="reset-filters">Reset Filters</button>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="posts">
+          <h2>Posts</h2>
+          <div class="posts-container">
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                <div class="post-image"> </div>
+                    <h3>{{ post.meal_title }}</h3>
+                    <p><strong>Time:</strong> {{ post.time }}</p>
+                    <p><strong>Location:</strong> {{ post.location }}</p>
+                </div>
+                <div class="post-body">
+                    <p><strong>Menu:</strong> {{ post.menu }}</p>
+                    <p><strong>Number of People:</strong> {{ post.number_of_people }}</p>
+                    <p><strong>In Return:</strong> {{ post.in_return }}</p>
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="pagination">
+          {% if page > 1 %}
+              <a href="/?page={{ page - 1 }}" class="prev">Previous</a>
+          {% endif %}
+      
+          {% for p in range(1, total_pages + 1) %}
+              <a href="/?page={{ p }}" class="{% if p == page %}active{% endif %}">{{ p }}</a>
+          {% endfor %}
+      
+          {% if page < total_pages %}
+              <a href="/?page={{ page + 1 }}" class="next">Next</a>
+          {% endif %}
+      </div>
+      
+      
+    </div>
 </body>
-
 
 </html>

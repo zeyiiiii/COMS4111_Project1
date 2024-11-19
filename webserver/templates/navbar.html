@@ -1,0 +1,21 @@
+<nav class="navbar">
+    <ul class="navbar-left">
+        <!-- Home Link -->
+        <li><a href="/">Home</a></li>
+    </ul>
+
+    <ul class="navbar-right">
+        <!-- User Profile -->
+        <li class="user-profile">
+            <a href="/profile/{{username}}">
+                <img id="user" src="{{ url_for('static', filename='images/person.png') }}" alt="Profile Picture">
+            </a>
+            <a href="/profile/{{username}}">{{ username }}</a>
+        </li>
+
+        <!-- Logout Button -->
+        <li class="logout-button">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </li>
+    </ul>
+</nav>

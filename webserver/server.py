@@ -24,6 +24,9 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
 
+GOOGLE_MAPS_API_KEY = "AIzaSyC2YvwjYGUzO5sINkVXcaEcUlnOIVyRVPw"
+
+
 
 # XXX: The Database URI should be in the format of: 
 #
@@ -163,7 +166,37 @@ def index():
   #     {% endfor %}
   #
   context = dict(data = names)
+  
+  posts = []
+  page = int(request.args.get('page', 1))
+  posts_per_page = 5
+  offset = (page - 1) * posts_per_page
+  try:
+      query = text(f"SELECT * FROM surveys_fill_out LIMIT {posts_per_page} OFFSET {offset}")
+      cursor = g.conn.execute(query)
+      for row in cursor.mappings():
+          posts.append({
+              'survey_id': row['survey_id'],
+              'user_id': row['user_id'],
+              'meal_title': row['meal_title'],
+              'time': row['time'].strftime('%Y-%m-%d %H:%M'),  # Format the datetime
+              'location': row['location'],
+              'menu': row['menu'],
+              'number_of_people': row['number_of_people'],
+              'in_return': row['in_return']
+          })
+      cursor.close()
+      
+      # Get the total number of posts for pagination controls
+      total_query = text("SELECT COUNT(*) AS total FROM surveys_fill_out")
+      total_cursor = g.conn.execute(total_query)
+      total_posts = total_cursor.scalar()
+      total_cursor.close()
 
+      total_pages = (total_posts + posts_per_page - 1) // posts_per_page
+      
+  except Exception as e:
+      print(f"Error fetching data from surveys_fill_out: {e}")
 
   #
   # render_template looks in the templates/ folder for files.
@@ -172,7 +205,75 @@ def index():
   if not session.get('logged_in'):
     return render_template('login.html')
   else:
-    return render_template("index.html", **context)
+    username = session.get('username', 'Guest')
+    return render_template("index.html", username=username, posts=posts, page=page, total_pages=total_pages)
+
+
+def get_coordinates(address):
+    """
+    Use the Google Geocoding API to convert an address into geographic coordinates (lat, lng).
+    """
+    geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={GOOGLE_MAPS_API_KEY}"
+    response = requests.get(geocode_url)
+    data = response.json()
+
+    if data.get('status') == 'OK' and data.get('results'):
+        return data['results'][0]['geometry']['location']  # Returns a dictionary with 'lat' and 'lng'
+    else:
+        raise ValueError("Unable to geocode the address. Please check the input address.")
+
+
+def fetch_posts_from_db():
+    """
+    Fetch posts from the database and return as a list of dictionaries.
+    """
+    posts = []
+    try:
+        cursor = g.conn.execute(text("SELECT survey_id, user_id, meal_title, time, location, menu, number_of_people, in_return FROM surveys_fill_out"))
+        for row in cursor.mappings():
+            posts.append({
+                'survey_id': row['survey_id'],
+                'user_id': row['user_id'],
+                'meal_title': row['meal_title'],
+                'time': row['time'].strftime('%Y-%m-%d %H:%M'),  # Format datetime for frontend
+                'location': row['location'],
+                'menu': row['menu'],
+                'number_of_people': row['number_of_people'],
+                'in_return': row['in_return']
+            })
+        cursor.close()
+    except Exception as e:
+        print(f"Database Query Error: {e}")
+        raise Exception("Error fetching posts from the database.")
+    return posts
+
+
+def filter_nearby_posts(user_coords, posts):
+    """
+    Use the Google Distance Matrix API to filter posts within a 1-hour driving distance.
+    """
+    destinations = "|".join([post['location'] for post in posts])
+    distance_matrix_url = (
+        f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={user_coords['lat']},{user_coords['lng']}"
+        f"&destinations={destinations}&mode=driving&key={GOOGLE_MAPS_API_KEY}"
+    )
+    response = requests.get(distance_matrix_url)
+    data = response.json()
+
+    if data.get('status') == 'OK' and 'rows' in data:
+        filtered_posts = []
+        for i, element in enumerate(data['rows'][0]['elements']):
+            if element['status'] == 'OK' and element['duration']['value'] <= 3600:  # 1 hour = 3600 seconds
+                filtered_posts.append(posts[i])
+        return filtered_posts
+    else:
+        raise ValueError("Error fetching driving distances. Please try again.")
+
+
+@app.route('/profile/<username>')
+def profile(username):
+  return render_template("profile.html", username=username)
+
 
 #
 # This is an example of a different path.  You can see it at
@@ -223,6 +324,12 @@ def login():
 
     return render_template('login.html')
 
+@app.route("/logout")
+def logout():
+  session['logged_in'] = False
+  session.pop('username', None)
+  return index()
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -251,8 +358,6 @@ def signup():
                 "email": POST_EMAIL
             })
             g.conn.commit()
-
-            session['signed_up'] = True
             return redirect(url_for('login'))
 
     return render_template('signup.html')
@@ -511,6 +616,6 @@ if __name__ == "__main__":
     # Start the Flask server
     print(f"\nRunning on {host}:{port}")
     app.secret_key = os.urandom(12)
-    app.run(host=host, port=port, debug=debug, threaded=threaded)
+    app.run(host=host, port=port, debug=True, threaded=threaded)
 
   run()

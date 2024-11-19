@@ -1,0 +1,265 @@
+/* Filters Section Styling */
+.filters {
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    /* Reduced padding */
+    background-color: #f9f9f9;
+    /* Light background */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    /* Smaller font size */
+}
+
+.filters h2 {
+    margin-bottom: 10px;
+    /* Reduced spacing */
+    font-size: 24px;
+    /* Smaller font size for title */
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Filter Inputs */
+.filters label {
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    /* Tighter spacing between labels and inputs */
+    display: block;
+    font-size: 12px;
+    color: #333;
+}
+
+.filters input,
+.filters select {
+    padding: 8px;
+    /* Smaller padding */
+    margin-bottom: 10px;
+    /* Reduced margin between inputs */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+.filters input:focus,
+.filters select:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0px 0px 3px rgba(0, 123, 255, 0.5);
+    /* Subtle glow */
+}
+
+/* Buttons */
+#expand-filters,
+#submit-filters,
+#reset-filters {
+    padding: 8px 15px;
+    /* Compact button size */
+    margin-top: 5px;
+    /* Reduced spacing between buttons */
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#expand-filters {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+}
+
+#expand-filters:hover {
+    background-color: #0056b3;
+}
+
+#submit-filters {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+#submit-filters:hover {
+    background-color: #218838;
+}
+
+#reset-filters {
+    background-color: orange;
+    color: white;
+    border: none;
+}
+
+#reset-filters:hover {
+    background-color: darkorange;
+}
+
+/* Compact Expandable Filters */
+#extra-filters {
+    margin-top: 10px;
+    /* Reduced spacing above */
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: none;
+    /* Initially hidden */
+}
+
+#extra-filters h3 {
+    font-size: 16px;
+    /* Smaller heading size */
+    margin-bottom: 10px;
+    /* Reduced spacing */
+    color: #444;
+}
+
+/* Compact Checkboxes */
+.dietary-restrictions,
+.meal-types,
+.in-return {
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.filters input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.filters label {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filters {
+        padding: 10px;
+    }
+
+    .filters h2 {
+        font-size: 16px;
+    }
+
+    .filters input,
+    .filters select {
+        font-size: 12px;
+    }
+
+    #extra-filters {
+        padding: 8px;
+    }
+}
+
+
+/* Post Section Styling */
+/* Posts Section Styling */
+.posts {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.posts h2 {
+    font-size: 24px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Post Cards */
+.post {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    width: 50em;
+}
+
+.post:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* User Icon */
+.user-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 2px solid #007BFF;
+}
+
+/* Post Content */
+.post p {
+    margin: 0;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Align Posts */
+.posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .post {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-icon {
+        margin-bottom: 10px;
+    }
+
+    .post p {
+        font-size: 14px;
+    }
+}
+
+
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    color: #333;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination a:hover {
+    background-color: #f1f1f1;
+}
+
+.pagination a.prev,
+.pagination a.next {
+    font-weight: bold;
+}
