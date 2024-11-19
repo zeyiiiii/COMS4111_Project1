@@ -102,6 +102,10 @@
                     <h3>{{ post.meal_title }}</h3>
                     <p><strong>Time:</strong> {{ post.time }}</p>
                     <p><strong>Location:</strong> {{ post.location }}</p>
+                    <p>
+                      <strong>Posted By:</strong> 
+                      <a href="{{ url_for('profile', username=post.username) }}" class="user-link">{{ post.username }}</a>
+                    </p>
                 </div>
                 <div class="post-body">
                     <p><strong>Menu:</strong> {{ post.menu }}</p>
