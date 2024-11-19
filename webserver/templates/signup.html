@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'login.css') }}">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <form action="/signup" method="POST">
+        <div class="signup">
+            <div class="signup-screen">
+                <div class="app-title">
+                    <h1>Sign Up</h1>
+                </div>
+                <div class="signup-form">
+                    <!-- Display Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <ul class="flash-messages">
+                                {% for category, message in messages %}
+                                    <li class="flash-message {{ category }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <div class="control-group">
+                        <input type="text" class="signup-field" value="" placeholder="username" name="username">
+                        <label class="signup-field-icon fui-user" for="signup-name"></label>
+                    </div>
+                    <div class="control-group">
+                        <input type="password" class="signup-field" value="" placeholder="password" name="password">
+                        <label class="signup-field-icon fui-lock" for="signup-pass"></label>
+                    </div>
+                    <div class="control-group">
+                        <input type="tags" class="signup-field" value="" placeholder="tags" name="tags">
+                        <label class="signup-field-icon fui-lock" for="signup-pass"></label>
+                    </div>
+                    <div class="control-group">
+                        <input type="email" class="signup-field" value="" placeholder="email" name="email">
+                        <label class="signup-field-icon fui-lock" for="signup-pass"></label>
+                    </div>
+                    <input type="submit" value="Sign up" class="btn2 btn2-primary btn2-large btn2-block">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <style>
+        /* Optional: style for flash messages */
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-message.error {
+            color: red;
+        }
+    </style>
+</body>
+</html>

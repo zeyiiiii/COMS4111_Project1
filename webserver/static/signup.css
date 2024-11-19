@@ -12,12 +12,12 @@ body {
     padding: 50px;
 }
 
-.login {
+.signup {
     margin: 20px auto;
     width: 300px;
 }
 
-.login-screen {
+.signup-screen {
     background-color: #FFF;
     padding: 20px;
     border-radius: 5px
@@ -28,7 +28,7 @@ body {
     color: #777;
 }
 
-.login-form {
+.signup-form {
     text-align: center;
 }
 
@@ -53,24 +53,6 @@ input:focus {
     box-shadow: none;
 }
 
-.btn1 {
-    border: 2px solid transparent;
-    background: #3498DB;
-    color: #ffffff;
-    font-size: 16px;
-    line-height: 25px;
-    padding: 10px 0;
-    text-decoration: none;
-    text-shadow: none;
-    border-radius: 3px;
-    box-shadow: none;
-    transition: 0.25s;
-    display: block;
-    width: 250px;
-    margin: 0 auto;
-    margin-bottom: 10px;
-}
-
 .btn2 {
     border: 2px solid transparent;
     background: #c0c0c0;
@@ -86,10 +68,6 @@ input:focus {
     display: block;
     width: 250px;
     margin: 0 auto;
-}
-
-.btn1:hover {
-    background-color: #2980B9;
 }
 
 .btn2:hover {

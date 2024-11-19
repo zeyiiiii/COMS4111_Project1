@@ -1,10 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename = 'login.css') }}">
-    <!-- JQuery -->
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
+<body>
+    <form action="/login" method="POST">
+        <div class="login">
+            <div class="login-screen">
+                <div class="app-title">
+                    <h1>Login</h1>
+                </div>
+                <div class="login-form">
+                    <!-- Display Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <ul class="flash-messages">
+                                {% for category, message in messages %}
+                                    <li class="flash-message {{ category }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <div class="control-group">
+                        <input type="text" class="login-field" value="" placeholder="username" name="username">
+                        <label class="login-field-icon fui-user" for="login-name"></label>
+                    </div>
+                    <div class="control-group">
+                        <input type="password" class="login-field" value="" placeholder="password" name="password">
+                        <label class="login-field-icon fui-lock" for="login-pass"></label>
+                    </div>
+                    <input type="submit" value="Log in" class="btn1 btn1-primary btn1-large btn1-block">
+                    <input type="button" value="Sign up" class="btn2 btn2-primary btn2-large btn2-block" id="signup-button">
+                </div>
+            </div>
+        </div>
+    </form>
 
 <form action="/login" method="POST">
     <div class="login">
@@ -25,3 +60,23 @@
     </div>
     </div>
 </form>
+
+    <script>
+        // JavaScript for redirecting to /signup
+        document.getElementById('signup-button').addEventListener('click', function() {
+            window.location.href = "/signup";  // Redirect to /signup page
+        });
+    </script>
+
+    <style>
+        /* Optional: style for flash messages */
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-message.error {
+            color: red;
+        }
+    </style>
+</body>
+</html>
