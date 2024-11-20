@@ -1,0 +1,5 @@
+Flask==2.3.2
+SQLAlchemy==2.0.17
+psycopg2-binary==2.9.8
+click==8.1.7
+python-dotenv==1.0.0
