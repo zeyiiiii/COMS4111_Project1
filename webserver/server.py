@@ -207,7 +207,7 @@ def index():
   if not session.get('logged_in'):
     return render_template('login.html')
   else:
-    username = session.get('username', 'Guest')
+    username = session.get('username')
     return render_template("index.html", username=username, posts=posts, page=page, total_pages=total_pages)
 
 
@@ -316,6 +316,7 @@ def login():
         if user:
             if user[3] == POST_PASSWORD:
                 session['logged_in'] = True
+                session['username'] = POST_USERNAME
                 return redirect(url_for('index'))
             else:
                 flash("*Wrong Password!", "error")
@@ -339,6 +340,18 @@ def signup():
         POST_PASSWORD = str(request.form.get('password', '')).strip()
         POST_TAGS = str(request.form.get('tags', '')).strip()
         POST_EMAIL = str(request.form.get('email', '')).strip()
+
+        if not POST_USERNAME:
+            flash("*Username is required!", "error")
+            return redirect(url_for('signup'))
+
+        if not POST_PASSWORD:
+            flash("*Password is required!", "error")
+            return redirect(url_for('signup'))
+
+        if not POST_EMAIL:
+            flash("*Email is required!", "error")
+            return redirect(url_for('signup'))
 
         query = text("SELECT * FROM users WHERE username = :username")
         user = g.conn.execute(query, {"username": POST_USERNAME}).fetchone()
@@ -364,21 +377,42 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/survey', methods=['POST'])
+@app.route('/survey', methods=['GET', 'POST'])
 def survey():
-    POST_USER_ID = str(request.form.get('user_id', '')).strip()
+    if request.method == 'GET':
+        return render_template('survey.html')  # Replace 'survey.html' with your template name
+
+    username = session.get('username')
+    if not username:
+        raise ValueError("No username found in session.")
+    
+    query = text("SELECT user_id FROM users WHERE username = :username")
+    with engine.connect() as connection:
+        result = connection.execute(query, {"username": username}).fetchone()
+    if not result:
+        raise ValueError("No user found with the provided username.")
+    
+    POST_USER_ID = result[0]
     POST_MEAL_TITLE = str(request.form.get('meal_title', '')).strip()
-    POST_TIME = datetime.strptime(request.form.get('time', '').strip(), '%Y-%m-%d %H:%M')
+    
+    # Handle time input
+    time_str = request.form.get('time', '').strip()
+    print(f"Received time input: '{time_str}'")
+    if not time_str:
+        return "Please provide a valid time.", 400  # Return an error response
+    
+    try:
+        POST_TIME = datetime.strptime(time_str, '%Y-%m-%dT%H:%M')
+    except ValueError:
+        return "Invalid time format. Please use 'YYYY-MM-DD HH:MM'.", 400
+
     POST_STATE = str(request.form.get('state', '')).strip()
     POST_CITY = str(request.form.get('city', '')).strip()
     POST_ADDRESS = str(request.form.get('address', '')).strip()
     POST_MENU = str(request.form.get('menu', '')).strip()
-    POST_DIETARY_RESTRICTION = 'PLACEHOLDER'
-    # POST_DIETARY_RESTRICTION = str(request.form.get('dietary_restriction', '')).strip()
-    POST_MEAL_TYPE = 'PLACEHOLDER'
-    # POST_MEAL_TYPE = str(request.form.get('meal_type', '')).strip()
+    POST_DIETARY_RESTRICTION = str(request.form.get('dietary_restriction', '')).strip()
+    POST_MEAL_TYPE = str(request.form.get('meal_type', '')).strip()
     POST_IN_RETURN = str(request.form.get('in_return', '')).strip()
-
     insert_query = text("""
         INSERT INTO surveys_fill_out (user_id, meal_title, time, state, city, address, menu, dietary_restriction, meal_type, in_return)
         VALUES (:user_id, :meal_title, :time, :state, :city, :address, :menu, :dietary_restriction, :meal_type, :in_return)
@@ -398,7 +432,7 @@ def survey():
         "in_return": POST_IN_RETURN
     })
     g.conn.commit()
-    return redirect(url_for('/'))
+    return redirect(url_for('index'))
 
 def update_database():
     connection.execute(text("DROP TABLE IF EXISTS users CASCADE;"))
@@ -467,7 +501,7 @@ def update_database():
     """))
     connection.execute(text("""
         INSERT INTO filters (time, state, city, dietary_restriction, meal_type, in_return) VALUES
-        ('2024-12-01 12:00:00', 'New York', 'New York', 'Vegetarian', 'Chinese food', 'Cash'),
+        ('2024-12-01 12:00:00', 'New York', 'New York City', 'Vegetarian', 'Chinese food', 'Cash'),
         ('2024-12-02 18:30:00', 'California', 'San Francisco', 'Gluten-Free', 'Keto', 'Doing dishes'),
         ('2024-12-03 08:00:00', 'California', 'Los Angeles', 'Vegan', 'Paleo', 'Bringing ingredients'),
         ('2024-12-04 14:00:00', 'Illinois', 'Chicago', 'None', 'Italian', 'Bringing sauces'),
@@ -499,25 +533,25 @@ def update_database():
     """))
     connection.execute(text("""
         INSERT INTO surveys_fill_out (user_id, meal_title, time, state, city, address, menu, dietary_restriction, meal_type, in_return) VALUES
-        (1, 'Italian Feast', '2024-12-01 18:00:00', 'New York', 'New York', '70 Morningside Drive', 'Pasta, Salad, Wine', 'Vegetarian', 'Chinese food', 'Cash'),
-        (2, 'Chinese Banquet', '2024-12-02 19:00:00', 'New York', 'New York', '71 Morningside Drive', 'Dumplings, Peking Duck', 'Gluten-Free', 'Keto', 'Doing dishes'),
+        (1, 'Italian Feast', '2024-12-01 18:00:00', 'New York', 'New York City', '70 Morningside Drive', 'Pasta, Salad, Wine', 'Vegetarian', 'Chinese food', 'Cash'),
+        (2, 'Chinese Banquet', '2024-12-02 19:00:00', 'New York', 'New York City', '71 Morningside Drive', 'Dumplings, Peking Duck', 'Gluten-Free', 'Keto', 'Doing dishes'),
         (3, 'Vegetarian Delight', '2024-12-03 12:30:00', 'North Carolina', 'Davidson', '209 Ridge Road', 'Tofu Stir Fry, Salad', 'Vegan', 'Paleo', 'Bringing ingredients'),
         (4, 'Meat Lovers BBQ', '2024-12-04 17:00:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'BBQ Ribs, Burgers', 'None', 'Italian', 'Bringing sauces'),
-        (5, 'Party Feast', '2024-12-05 21:00:00', 'New York', 'New York', '885 6th Avenue', 'Nachos, Tacos, Beer', 'Nut-Free', 'Mexican', 'Cash'),
+        (5, 'Party Feast', '2024-12-05 21:00:00', 'New York', 'New York City', '885 6th Avenue', 'Nachos, Tacos, Beer', 'Nut-Free', 'Mexican', 'Cash'),
         (6, 'Mexican Fiesta', '2024-12-06 18:30:00', 'North Carolina', 'Davidson', '209 Ridge Road', 'Enchiladas, Guacamole', 'Dairy-Free', 'Fusion', 'Doing dishes'),
         (7, 'Chef’s Special', '2024-12-07 19:00:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'Surprise Menu', 'Halal', 'Indian', 'Bringing ingredients'),
-        (9, 'Pasta Night', '2024-12-08 18:00:00', 'New York', 'New York', '70 Morningside Drive', 'Spaghetti, Lasagna', 'Kosher', 'Mediterranean', 'Bringing sauces'),
-        (11, 'Professional Chef’s Choice', '2024-12-09 20:00:00', 'New York', 'New York', '71 Morningside Drive', 'Sushi, Sashimi', 'None', 'Seafood', 'Cash'),
+        (9, 'Pasta Night', '2024-12-08 18:00:00', 'New York', 'New York City', '70 Morningside Drive', 'Spaghetti, Lasagna', 'Kosher', 'Mediterranean', 'Bringing sauces'),
+        (11, 'Professional Chef’s Choice', '2024-12-09 20:00:00', 'New York', 'New York City', '71 Morningside Drive', 'Sushi, Sashimi', 'None', 'Seafood', 'Cash'),
         (12, 'Unique Culinary Experience', '2024-12-10 17:30:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'Fusion Menu', 'Paleo', 'American', 'Doing dishes'),
-        (1, 'Italian Brunch', '2024-12-11 11:00:00', 'New York', 'New York', '70 Morningside Drive', 'Bruschetta, Caprese Salad', 'Vegetarian', 'Chinese food', 'Cash'),
-        (2, 'Dim Sum Special', '2024-12-12 12:00:00', 'New York', 'New York', '71 Morningside Drive', 'Dim Sum, Spring Rolls', 'Gluten-Free', 'Keto', 'Doing dishes'),
+        (1, 'Italian Brunch', '2024-12-11 11:00:00', 'New York', 'New York City', '70 Morningside Drive', 'Bruschetta, Caprese Salad', 'Vegetarian', 'Chinese food', 'Cash'),
+        (2, 'Dim Sum Special', '2024-12-12 12:00:00', 'New York', 'New York City', '71 Morningside Drive', 'Dim Sum, Spring Rolls', 'Gluten-Free', 'Keto', 'Doing dishes'),
         (3, 'Vegan Delight', '2024-12-13 13:30:00', 'North Carolina', 'Davidson', '209 Ridge Road', 'Vegan Burgers, Salad', 'Vegan', 'Paleo', 'Bringing ingredients'),
         (4, 'Steak Night', '2024-12-14 18:30:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'Steak, Mashed Potatoes', 'None', 'Italian', 'Bringing sauces'),
-        (5, 'Taco Tuesday', '2024-12-15 19:00:00', 'New York', 'New York', '885 6th Avenue', 'Tacos, Salsa', 'Nut-Free', 'Mexican', 'Cash'),
+        (5, 'Taco Tuesday', '2024-12-15 19:00:00', 'New York', 'New York City', '885 6th Avenue', 'Tacos, Salsa', 'Nut-Free', 'Mexican', 'Cash'),
         (6, 'Mexican Night', '2024-12-16 20:00:00', 'North Carolina', 'Davidson', '209 Ridge Road, NC', 'Burritos, Tacos', 'Dairy-Free', 'Fusion', 'Doing dishes'),
         (7, 'Surprise Tasting Menu', '2024-12-17 19:30:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'Fried Rice', 'Halal', 'Indian', 'Bringing ingredients'),
-        (9, 'Italian Delight', '2024-12-18 18:00:00', 'New York', 'New York', '70 Morningside Drive', 'Pizza, Pasta', 'Kosher', 'Mediterranean', 'Bringing sauces'),
-        (4, 'Pizza Night', '2024-12-19 18:30:00', 'New York', 'New York', '70 Morningside Drive', 'Pizza, Salad', 'None', 'Italian', 'Bringing sauces'),
+        (9, 'Italian Delight', '2024-12-18 18:00:00', 'New York', 'New York City', '70 Morningside Drive', 'Pizza, Pasta', 'Kosher', 'Mediterranean', 'Bringing sauces'),
+        (4, 'Pizza Night', '2024-12-19 18:30:00', 'New York', 'New York City', '70 Morningside Drive', 'Pizza, Salad', 'None', 'Italian', 'Bringing sauces'),
         (4, 'BBQ Night', '2024-12-20 19:00:00', 'North Carolina', 'Davidson', '225 Baker Drive', 'Grilled Chicken, Burgers', 'None', 'Seafood', 'Cash');
     """))
 
@@ -627,10 +661,10 @@ if __name__ == "__main__":
     
     # Connect to the database and manage table creation and data insertion
     with engine.connect() as connection:
-      print("============Connected to the database successfully.==============")
+    #   print("============Connected to the database successfully.==============")
     #   update_database()
 
-      print("=============Database updated successfully.===============")
+    #   print("=============Database updated successfully.===============")
 
       # Query and print all data from all tables for verification
       try:

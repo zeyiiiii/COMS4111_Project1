@@ -20,7 +20,7 @@ body {
 .signup-screen {
     background-color: #FFF;
     padding: 20px;
-    border-radius: 5px
+    border-radius: 5px;
 }
 
 .app-title {
@@ -72,4 +72,24 @@ input:focus {
 
 .btn2:hover {
     background-color: #808080;
+}
+
+/* Add asterisk to required fields */
+label.required::after {
+    content: "*";
+    color: red;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* Styling for the input fields that are required */
+input:invalid {
+    border: 2px solid red;
+}
+
+/* Optional: Style for the error message when an input is invalid */
+input:invalid + .error-message {
+    color: red;
+    font-size: 12px;
+    display: block;
 }

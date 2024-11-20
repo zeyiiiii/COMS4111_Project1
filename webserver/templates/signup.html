@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Sign Up</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'signup.css') }}">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
@@ -28,11 +28,11 @@
                     
                     <div class="control-group">
                         <input type="text" class="signup-field" value="" placeholder="username" name="username">
-                        <label class="signup-field-icon fui-user" for="signup-name"></label>
+                        <label class="signup-field-icon fui-user required" for="signup-name"></label>
                     </div>
                     <div class="control-group">
                         <input type="password" class="signup-field" value="" placeholder="password" name="password">
-                        <label class="signup-field-icon fui-lock" for="signup-pass"></label>
+                        <label class="signup-field-icon fui-lock required" for="signup-pass"></label>
                     </div>
                     <div class="control-group">
                         <input type="tags" class="signup-field" value="" placeholder="tags" name="tags">
@@ -40,7 +40,7 @@
                     </div>
                     <div class="control-group">
                         <input type="email" class="signup-field" value="" placeholder="email" name="email">
-                        <label class="signup-field-icon fui-lock" for="signup-pass"></label>
+                        <label class="signup-field-icon fui-lock required" for="signup-pass"></label>
                     </div>
                     <input type="submit" value="Sign up" class="btn2 btn2-primary btn2-large btn2-block">
                 </div>
