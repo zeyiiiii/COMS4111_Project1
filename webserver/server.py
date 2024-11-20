@@ -728,6 +728,116 @@ def survey():
     g.conn.commit()
     return redirect(url_for('index'))
 
+@app.route('/message', methods=['GET', 'POST'])
+def message():
+    username = session.get('username')
+    if not username:
+        raise ValueError("No username found in session.")
+
+    # Fetch user ID based on username
+    query = text("SELECT user_id FROM users WHERE username = :username")
+    with engine.connect() as connection:
+        result = connection.execute(query, {"username": username}).fetchone()
+
+    if not result:
+        raise ValueError("No user found with the provided username.")
+    
+    POST_USER_ID = result[0]
+
+    if request.method == 'GET':
+        search_query = request.args.get('search', '')  # Get search term from URL
+
+        # Fetch all messages where the current user is either sender or receiver
+        get_messages_query = text("""
+            SELECT message_id, sender, receiver, content 
+            FROM message_send
+            WHERE sender = :user_id OR receiver = :user_id
+            ORDER BY message_id
+        """)
+        with engine.connect() as connection:
+            messages = connection.execute(get_messages_query, {"user_id": POST_USER_ID}).fetchall()
+
+        # Group messages by the other user
+        conversations = {}
+        for message in messages:
+            if message.sender != POST_USER_ID:
+                other_user_id = message.sender
+            else:
+                other_user_id = message.receiver
+            
+            # Fetch the username of the other user
+            get_username_query = text("""
+                SELECT username FROM users WHERE user_id = :user_id
+            """)
+            with engine.connect() as connection:
+                other_user_result = connection.execute(get_username_query, {"user_id": other_user_id}).fetchone()
+
+            if not other_user_result:
+                continue  # Skip if no username found
+
+            other_user_username = other_user_result[0]
+
+            if other_user_id not in conversations:
+                conversations[other_user_id] = {
+                    'username': other_user_username,
+                    'messages': []
+                }
+
+            conversations[other_user_id]['messages'].append({
+                'message_id': message.message_id,
+                'content': message.content,
+                'sender': message.sender,
+                'receiver': message.receiver
+            })
+
+        # If a search query is provided, filter users based on the search term
+        if search_query:
+            search_users_query = text("""
+                SELECT user_id, username
+                FROM users
+                WHERE username LIKE :search_query
+                AND user_id != :user_id
+            """)
+            with engine.connect() as connection:
+                search_results = connection.execute(search_users_query, {"search_query": f"%{search_query}%", "user_id": POST_USER_ID}).fetchall()
+        else:
+            search_results = []
+
+        return render_template('message.html', 
+                               conversations=conversations, 
+                               current_user_id=POST_USER_ID, 
+                               search_results=search_results, 
+                               search_query=search_query)
+
+    elif request.method == 'POST':
+        content = request.form.get('content')
+        receiver = request.form.get('receiver')
+        
+        if not content or not receiver:
+            raise ValueError("Message content or receiver ID missing.")
+        
+        # Get the current user's ID
+        query = text("SELECT user_id FROM users WHERE username = :username")
+        with engine.connect() as connection:
+            result = connection.execute(query, {"username": username}).fetchone()
+
+        if not result:
+            raise ValueError("No user found with the provided username.")
+        
+        sender = result[0]
+
+        # Insert the message into the message_send table
+        insert_message_query = text("""
+            INSERT INTO message_send (sender, receiver, content) 
+            VALUES (:sender, :receiver, :content)
+        """)
+        with engine.connect() as connection:
+            connection.execute(insert_message_query, {"sender": sender, "receiver": receiver, "content": content})
+            connection.commit()  # Ensure the changes are committed
+
+        # Redirect back to the messages page after sending the message
+        return redirect(url_for('message'))
+
 def update_database():
     connection.execute(text("DROP TABLE IF EXISTS users CASCADE;"))
     print("============droped users=============")
