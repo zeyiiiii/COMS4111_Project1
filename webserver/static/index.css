@@ -235,6 +235,17 @@
     }
 }
 
+.user-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.user-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
 
 .pagination {
     text-align: center;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,10 +9,102 @@
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 
-
 {% include 'navbar.html' %}
 
 <body>
-<h1>Hello, {{username}}!</h1>
+    <div class="profile-container">
+        <header>
+            <h1>Welcome to {{ username }}'s page!</h1>
+        </header>
+
+        <section class="email-section">
+            <h2>Email 📧</h2>
+            <p class="email-info">{{ info[0].email }}</p>
+        </section>
+
+        <section class="tag-section">
+            <h2>Tags 🏷️</h2>
+            <div class="tag-info">
+                {% for tag in info[0].tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="rate-section">
+            <h2> Rating ⭐</h2>
+            <div class="rating-info">
+                {% if rating is not none %}
+                    <p>Current rating is: <strong>{{ rating | round(2) }} / 5</strong></p>
+                {% else %}
+                    <p>Have not provided a rating yet.</p>
+                {% endif %}
+                <p>Current ranking (among <strong>{{ total_users }}</strong> users) is: <strong>{{ rank }}</strong></p>
+            </div>
+        </section>
+        
+        </section>
+        <section class="reviews-section">
+            <h2>Reviews</h2>
+            <div class="review-cards-container">
+                {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-card-icon">
+                        🍴
+                    </div>
+                    <div class="review-card-info">
+                        <p><strong>Comment:</strong> {{ review.content }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+            <!-- Add Review Form -->
+            <section class="add-review-section">
+                <h2>Leave a Review</h2>
+                <form action="{{ url_for('add_review') }}" method="POST">
+                    <input type="hidden" name="user_id" value="{{ uid }}">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <div>
+                        <label for="content">Review Content:</label>
+                        <textarea id="content" name="content" required></textarea>
+                    </div>
+                    <div>
+                        <label for="rate">Rating (1-5):</label>
+                        <select id="rate" name="rate" required>
+                            <option value="" disabled selected>Select a rating</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </section>
+            
+
+        <section class="posts-section">
+            <h2>Posts</h2>
+            <div class="post-cards-container">
+                {% for post in posts %}
+                <div class="post-card">
+                    <div class="post-header">
+                        <h3>{{ post.meal_title }}</h3>
+                        <p><strong>Time:</strong> {{ post.time }}</p>
+                        <p><strong>Location:</strong> {{ post.location }}</p>
+                    </div>
+                    <div class="post-body">
+                        <p><strong>Menu:</strong> {{ post.menu }}</p>
+                        <p><strong>Number of People:</strong> {{ post.number_of_people }}</p>
+                        <p><strong>In Return:</strong> {{ post.in_return }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 </body>
 </html>

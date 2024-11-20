@@ -1,3 +1,221 @@
-h1 {
-    padding-top: 50px;
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.email-section,
+.tag-section,
+.rate-section,
+.reviews-section,
+.posts-section {
+    margin-bottom: 20px;
+}
+
+.email-info {
+    font-size: 1rem;
+    color: #555;
+}
+
+.email-section h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tag-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.tag-section h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* Ratings */
+.rating-info p {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+.rate-section h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-bottom: 40px;
+}
+
+.reviews-section h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.review-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.review-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: calc(33.333% - 20px);
+    box-sizing: border-box;
+}
+
+.review-card-icon {
+    font-size: 30px;
+    margin-right: 15px;
+}
+
+.review-card-info p {
+    margin: 0;
+    color: #555;
+}
+
+/* Add Review */
+.add-review-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+.add-review-section h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+textarea:focus,
+select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.submit-button {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* Posts Section */
+.posts-section h2 {
+    color: #555;
+    text-align: left;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.post-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.post-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: calc(50% - 20px);
+    box-sizing: border-box;
+}
+
+.post-card h3 {
+    color: #333;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.post-card p {
+    margin: 5px 0;
+    color: #555;
 }
