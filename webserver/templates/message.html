@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Messages</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='message.css') }}">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="conversations-list">
+            <h3>Conversations</h3>
+            
+            <!-- Search Field -->
+            <form action="{{ url_for('message') }}" method="GET">
+                <input type="text" name="search" placeholder="Search for a user..." value="{{ search_query }}">
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Search Results -->
+            <div class="search-results">
+                {% if search_results %}
+                    <h4>Search Results</h4>
+                    <ul>
+                        {% for user in search_results %}
+                            <li>
+                                <a href="{{ url_for('message') }}?search={{ user.username }}">
+                                    Conversation with {{ user.username }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elif search_query %}
+                    <p>No users found for "{{ search_query }}"</p>
+                {% endif %}
+            </div>
+
+            <ul>
+                {% for other_user_id, conversation in conversations.items() %}
+                    <li>
+                        <a href="#" class="conversation-link" data-other-user="{{ other_user_id }}">
+                            Conversation with {{ conversation.username }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="conversation-detail">
+            <h3>Conversation</h3>
+            <div id="messages">
+                {% for other_user_id, conversation in conversations.items() %}
+                    <div class="conversation" id="conversation-{{ other_user_id }}">
+                        <h4>Conversation with {{ conversation.username }}</h4>
+                        <div class="messages">
+                            {% for message in conversation.messages %}
+                                <div class="message">
+                                    <strong>
+                                        {% if message.sender == current_user_id %}
+                                            You
+                                        {% else %}
+                                            {{ conversation.username }}
+                                        {% endif %}
+                                    </strong>: {{ message.content }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="message-input">
+                            <form action="/message" method="POST">
+                                <textarea name="content" placeholder="Type your message..."></textarea>
+                                <input type="hidden" name="receiver" value="{{ other_user_id }}"> <!-- Add hidden input for the receiver ID -->
+                                <button type="submit">Send</button>
+                            </form>                            
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
