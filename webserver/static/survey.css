@@ -1,0 +1,86 @@
+.survey {
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    /* Reduced padding */
+    background-color: #f9f9f9;
+    /* Light background */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    /* Smaller font size */
+}
+
+.survey h2 {
+    margin-bottom: 10px;
+    /* Reduced spacing */
+    font-size: 24px;
+    /* Smaller font size for title */
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+}
+
+.survey label {
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    /* Tighter spacing between labels and inputs */
+    display: block;
+    font-size: 12px;
+    color: #333;
+}
+
+.survey input,
+.survey select {
+    padding: 8px;
+    /* Smaller padding */
+    margin-bottom: 10px;
+    /* Reduced margin between inputs */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+.survey input:focus,
+.survey select:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0px 0px 3px rgba(0, 123, 255, 0.5);
+    /* Subtle glow */
+}
+
+/* Buttons */
+#submit-survey {
+    padding: 8px 15px;
+    /* Compact button size */
+    margin-top: 5px;
+    /* Reduced spacing between buttons */
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#submit-survey {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+#submit-survey:hover {
+    background-color: #218838;
+}
+
+.dietary-restriction,
+.meal-type,
+.in-return {
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.survey label {
+    display: inline-block;
+    margin-bottom: 5px;
+}

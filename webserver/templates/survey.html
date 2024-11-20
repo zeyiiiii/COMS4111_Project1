@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='survey.css') }}">
+    <!-- JQuery -->
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename = 'index.js') }}"></script>
+</head>
+
+<body>
+    <form action="/survey" method="POST">
+        <div class="container">
+            <div class="survey">
+                <h2>Survey</h2>
+                <div class="title-field">
+                    <label>Meal Title:</label>
+                    <input type="text" id="meal_title" name="meal_title" placeholder="meal title">
+                </div>
+                <div class="date-range-field">
+                    <div>
+                        <label for="datetime">Time:</label>
+                        <input type="datetime-local" id="datetime" name="time">
+                    </div>
+                </div>
+                <div class="location-field">
+                    <label for="state-select">State:</label>
+                    <select id="state-select" name="state">
+                        <option value="" disabled selected>Choose a state</option>
+                    </select>
+                    <label for="city-select">City:</label>
+                    <select id="city-select" name="city">
+                        <option value="" disabled selected>Choose a city</option>
+                    </select>
+                    <label>Address:</label>
+                    <input type="text" id="address" name="address" placeholder="address">
+                </div>
+                <div class="meal-field">
+                    <label>Menu:</label>
+                    <input type="text" id="menu" name="menu" placeholder="menu">
+                </div>
+                <div class="dietary-restriction">
+                    <label for="dietary-restriction">Dietary Restriction:</label>
+                    <select id="dietary-restriction" name="dietary_restriction">
+                        <option value="" disabled selected>Select a dietary restriction</option>
+                        <option value="None">None</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Kosher">Kosher</option>
+                        <option value="Halal">Halal</option>
+                        <option value="Gluten-Free">Gluten-Free</option>
+                        <option value="Nut-Free">Nut-Free</option>
+                        <option value="Dairy-Free">Dairy-Free</option>
+                        <option value="Paleo">Paleo</option>
+                    </select>
+                </div>
+                <div class="meal-types">
+                    <label for="meal-types">Meal Types:</label>
+                    <select id="meal-types" name="meal_type">
+                        <option value="" disabled selected>Select a meal type</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Seafood">Seafood</option>
+                        <option value="Fusion">Fusion</option>
+                        <option value="Paleo">Paleo</option>
+                        <option value="Chinese-food">Chinese food</option>
+                        <option value="Keto">Keto</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                        <option value="American">American</option>
+                    </select>
+                </div>
+                <div class="in-return">
+                    <label for="in-return">In Return:</label>
+                    <select id="in-return" name="in_return">
+                        <option value="" disabled selected>Choose an option</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Doing dishes">Doing Dishes</option>
+                        <option value="Bringing ingredients">Bringing Ingredients</option>
+                        <option value="Bringing sauces">Bringing Sauces</option>
+                    </select>
+                </div>
+                <button id="submit-survey">Submit</button>
+            </div>
+        </div>
+    </form>    
+</body>
+
+</html>
