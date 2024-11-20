@@ -58,13 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("city-select").disabled = true; // Disable cities while loading
         fetchCities(stateName);
     });
-
-    // Enable street input and the find-location button after city selection
-    document.getElementById("city-select").addEventListener("change", function () {
-        console.log("City selected:", this.value); // Debugging log
-        document.getElementById("street-info").disabled = false; // Enable street input
-    });
-
     // Toggle the visibility of the extra filters section
     const expandFiltersButton = document.getElementById("expand-filters");
     const extraFiltersSection = document.getElementById("extra-filters");
@@ -79,15 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Submit filters
-    document.getElementById("submit-filters").addEventListener("click", function () {
-        const street = document.getElementById("street-info").value;
-        const city = document.getElementById("city-select").value;
-        const state = document.getElementById("state-select").value;
-
-        const filterData = { street, city, state };
-    });
-
     // Assign random food emojis to post images
     const foodEmojis = [
         "🍔", "🍕", "🍣", "🥗", "🍜", "🍤", "🍩", "🍪", "🍫", "🧁",
@@ -100,30 +84,30 @@ document.addEventListener("DOMContentLoaded", () => {
         image.textContent = randomEmoji; // Set the emoji as the content of the div
     });
 
-    /* Reset Logic */
-    document.getElementById("reset-filters").addEventListener("click", function () {
-        // Reset date
-        document.getElementById("date").value = "";
+    // /* Reset Logic */
+    // document.getElementById("reset-filters").addEventListener("click", function () {
+    //     // Reset date
+    //     document.getElementById("date").value = "";
 
-        // Reset location filters
-        document.getElementById("state-select").value = "";
-        document.getElementById("city-select").value = "";
-        document.getElementById("street-info").value = "";
+    //     // Reset location filters
+    //     document.getElementById("state-select").value = "";
+    //     document.getElementById("city-select").value = "";
+    //     document.getElementById("street-info").value = "";
 
-        // Disable dependent dropdowns and fields
-        document.getElementById("state-select").disabled = false;
-        document.getElementById("city-select").disabled = true;
-        document.getElementById("street-info").disabled = true;
+    //     // Disable dependent dropdowns and fields
+    //     document.getElementById("state-select").disabled = false;
+    //     document.getElementById("city-select").disabled = true;
+    //     document.getElementById("street-info").disabled = true;
 
-        // Reset additional filters (if any)
-        const checkboxes = document.querySelectorAll(
-            ".dietary-restrictions input[type='checkbox'], .meal-types input[type='checkbox'], .in-return input[type='checkbox']"
-        );
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = false;
-        });
+    //     // Reset additional filters (if any)
+    //     const checkboxes = document.querySelectorAll(
+    //         ".dietary-restrictions input[type='checkbox'], .meal-types input[type='checkbox'], .in-return input[type='checkbox']"
+    //     );
+    //     checkboxes.forEach((checkbox) => {
+    //         checkbox.checked = false;
+    //     });
 
-        // Clear the posts container
-        window.location.href = "/";
-    });
+    //     // Clear the posts container
+    //     window.location.href = "/";
+    // });
 });
